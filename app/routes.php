@@ -13,11 +13,11 @@
 
 Route::get('/', function()
 {
-    return View::make('hello');
+    return View::make('app');
 });
 
 Route::resource(
     'quote', 
     'QuoteController',
-    ['only' => ['create', 'index']]
+    ['only' => ['store', 'index']]
 );

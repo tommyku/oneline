@@ -7,7 +7,7 @@ class QuoteController extends \BaseController {
      *
      * @return Response
      */
-    public function create()
+    public function store()
     {
         // validate input
         if (!Input::has('quote')) {
