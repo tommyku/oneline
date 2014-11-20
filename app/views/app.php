@@ -9,6 +9,7 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" />
         <meta name="description" content="Light-weight search engine for stored links" />
 
+        <script type="text/javascript" src="js/jquery/dist/jquery.min.js"></script>
         <script type="text/javascript" src="js/angular/angular.min.js"></script>
         <script type="text/javascript" src="js/angular-ui-router/release/angular-ui-router.min.js"></script>
         <script type="text/javascript" src="js/angular-resource/angular-resource.min.js"></script>

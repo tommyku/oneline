@@ -6,8 +6,8 @@
 </header>
 
 <ul class="main-list">
-  <li class="link-block animated fadeInUp" ng-repeat="item in pack"  style="-webkit-animation-delay:{{$index*0.1}}s; animation-delay:{{$index*0.1}}s;">
-    <a ui-sref="view(item)" title="{{item.author}}">
+  <li class="link-block animated fadeInUp" ng-repeat="item in pack"  style="-webkit-animation-delay:{{$index*0.1}}s; animation-delay:{{$index*0.1}}s;" ng-click="goToView(item)">
+    <a title="{{item.author}}">
       <div class="data-wrapper">
         <div class="quote" data-ldquo="&ldquo;" data-rdquo="&rdquo;">{{item.quote}}</div>
         <div class="author ng-binding" style="padding-left: 0; margin-top: 0.2em;">{{item.author}}</div>
@@ -15,3 +15,5 @@
     </a>
   </li>
 </ul>
+
+<div infinite-scroll="fetch()" infinite-scroll-distance="3"></div>

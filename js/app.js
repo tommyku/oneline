@@ -32,7 +32,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
       controller: 'postCtrl'
     })
     .state('view', {
-      url: '/view',
+      url: '/view/?params',
       templateUrl: 'partials/view.html',
       controller: 'viewCtrl'
     });
@@ -42,16 +42,24 @@ app.config(function($stateProvider, $urlRouterProvider) {
 
 app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
   $scope.sp = 0;
+  $scope.nomore = false;
+  $scope.loading = false;
   $scope.pack = [];
 
   $scope.fetch = function() {
+    if ($scope.nomore || $scope.loading) {
+      return;
+    }
+
     $rootScope.$broadcast('fetch-initiate');
     var quote = new Quote();
     quote.$get({'sp': $scope.sp})
       .then(function(response) {
 	$scope.sp = response.sp;
 
-	$scope.pack = response.quotes.concat($scope.pack);
+        console.log(response);
+
+	$scope.pack = $scope.pack.concat(response.quotes);
 
 	$rootScope.$broadcast('fetch-done');
 
@@ -64,13 +72,18 @@ app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
       });
   };
 
-  $scope.fetch();
+  $scope.goToView = function(item) {
+    var param = angular.toJson(item);
+    $state.go('view', {params: param});
+  };
 
   $scope.$on('fetch-initiate', function(e, data) {
+    $scope.loading = true;
     console.log('fetch initiated');
   });
 
   $scope.$on('fetch-done', function(e, data) {
+    $scope.loading = false;
     console.log('fetch done');
   });
 
@@ -79,11 +92,12 @@ app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
   });
 
   $scope.$on('fetch-nomore', function(e, data) {
+    $scope.nomore = true;
     console.log('fetch nomore');
   });
 });
 
-app.controller("postCtrl", function($scope, Quote, $rootScope) {
+app.controller("postCtrl", function($scope, Quote, $rootScope, $state) {
   $scope.disabled = false;
 
   $scope.quote = {
@@ -113,6 +127,7 @@ app.controller("postCtrl", function($scope, Quote, $rootScope) {
 
   $scope.$on('post-done', function(e, data) {
     // done and go to see the detail
+    $state.go('view', {params: angular.toJson($scope.quote)});
   });
 
   $scope.$on('post-fail', function(e, data) {
@@ -120,4 +135,8 @@ app.controller("postCtrl", function($scope, Quote, $rootScope) {
     $scope.disabled = false;
     // display error
   });
+});
+
+app.controller("viewCtrl", function($scope, $rootScope, $stateParams) {
+  $scope.quote = angular.fromJson($stateParams.params);
 });

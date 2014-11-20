@@ -117,19 +117,19 @@ ul.main-list li.inactive {
     text-align: center;
 }
 
-.link-block div.quote::before {
+.quote::before {
     content: attr(data-ldquo);
     color: #cccccc;
     font-size: xx-large;
 }
 
-.link-block div.quote::after {
+.quote::after {
     content: attr(data-rdquo);
     color: #cccccc;
     font-size: xx-large;
 }
 
-.link-block div.quote {
+.quote {
     font-size: x-large;
 }
 
@@ -210,4 +210,39 @@ div.visible-d {
     font-size: large;
     line-height: 2em;
     cursor: pointer;
+}
+
+.fullScreen {
+    position: fixed;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+}
+
+.fullScreen-bg {
+    background-position: center center;
+    background-size: cover;
+}
+
+.centerQuote {
+    background-color: rgba(0,0,0,0.5);
+    color: #ffffff;
+    padding: 1em;
+    text-align: center;
+
+
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.centerQuote h1 {
+    font-size: xx-large;
+}
+
+em.author {
+    font-family: serif;
+    font-size: large;
 }

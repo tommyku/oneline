@@ -36,13 +36,14 @@ class QuoteController extends \BaseController {
         if (!Input::has('sp')) {
             $sp = 0;
         } else {
-            $sp = intval(Input::get('sp')) * 10;
+            $sp = intval(Input::get('sp'));
         }
         
         return Response::json([
-            'sp' => $sp+10,
-            'quotes' => Quote::skip($sp)->take(10)->orderBy('created_at', 'desc')->get()
+            'sp' => intval($sp)+10,
+            'quotes' => Quote::orderBy('created_at', 'desc')->skip($sp)->take(10)->get()
         ]);
     }
 
 }
+
