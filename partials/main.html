@@ -6,7 +6,7 @@
 </header>
 
 <ul class="main-list">
-  <li class="link-block animated fadeInUp" ng-repeat="item in pack"  style="-webkit-animation-delay:{{$index%10*0.1}}s; animation-delay:{{$index%10*0.1}}s;" ng-click="goToView(item)">
+  <li class="link-block animated fadeInUp" ng-repeat="item in pack"  style="-webkit-animation-delay:{{$index%10*0.1}}s; animation-delay:{{$index%10*0.1}}s;" ng-click="goToView(item.id)">
     <a title="{{item.author}}">
       <div class="data-wrapper">
         <div class="quote" data-ldquo="&ldquo;" data-rdquo="&rdquo;">{{item.quote}}</div>

@@ -18,11 +18,11 @@ class QuoteController extends \BaseController {
         $quote = Quote::create([
             'quote' => Input::get('quote'),
             'author' => (Input::has('author')) ? Input::get('author') : 'John Doe',
-            'image' => (Input::has('image')) ? Input::get('image') : asset('res/stub.png')
+            'image' => (Input::has('image')) ? Input::get('image') : asset('res/stub.jpg')
         ]);
 
         // done
-        return Response::make($quote);
+        return Response::json($quote);
     }
 
 
@@ -43,6 +43,13 @@ class QuoteController extends \BaseController {
             'sp' => intval($sp)+10,
             'quotes' => Quote::orderBy('created_at', 'desc')->skip($sp)->take(10)->get()
         ]);
+    }
+
+    public function show($id) {
+        $quote = Quote::findOrFail($id);
+        return Response::json(
+            $quote
+        );
     }
 
 }

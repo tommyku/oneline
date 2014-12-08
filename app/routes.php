@@ -19,5 +19,5 @@ Route::get('/', function()
 Route::resource(
     'quote', 
     'QuoteController',
-    ['only' => ['store', 'index']]
+    ['only' => ['store', 'index', 'show']]
 );

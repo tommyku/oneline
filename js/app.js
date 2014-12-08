@@ -10,9 +10,74 @@ app.factory('Quote', function($resource) {
 	'params': {
 	  'sp': '0'
 	}
+      },
+      'show': {
+        method: "GET",
+        url: "quote/:id",
+        params: {
+          'id': '0'
+        }
       }
     }
   );
+});
+
+app.service('QuoteService', function() {
+  var quotes = [];
+  var now = -1;
+
+  var setQuotes = function(arr, i) {
+    quotes = arr;
+    now = i;
+  };
+
+  var getQuote = function() {
+    return quotes[now];
+  };
+
+  var setNow = function(i) {
+    if (i < 0 || i >= quotes.length) {
+      return;
+    }
+    now = i;
+  };
+
+  var find = function(id) {
+    for (var i=0; i<quotes.length; ++i) {
+      if (quotes[i].id == id) {
+        now = i;
+        return now;
+      }
+    }
+    return undefined;
+  };
+
+  var prev = function() {
+    --now;
+    if (now < 0) {
+      ++now;
+      return undefined;
+    }
+    return now;
+  };
+
+  var next = function() {
+    ++now;
+    if (now >= quotes.length) {
+      --now;
+      return undefined;
+    }
+    return now;
+  };
+
+  return {
+    setQuotes: setQuotes,
+    getQuote: getQuote,
+    setNow: setNow,
+    find: find,
+    prev: prev,
+    next: next
+  };
 });
 
 // http://stackoverflow.com/questions/13882077/angularjs-passing-scope-between-routes
@@ -32,7 +97,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
       controller: 'postCtrl'
     })
     .state('view', {
-      url: '/view/?params',
+      url: '/view/:id',
       templateUrl: 'partials/view.html',
       controller: 'viewCtrl'
     });
@@ -40,11 +105,13 @@ app.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/');
 });
 
-app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
+app.controller("mainCtrl", function($scope, Quote, $rootScope, $state, QuoteService) {
   $scope.sp = 0;
   $scope.nomore = false;
   $scope.loading = false;
   $scope.pack = [];
+
+  $scope.$QuoteService = QuoteService;
 
   $scope.fetch = function() {
     if ($scope.nomore || $scope.loading) {
@@ -60,6 +127,7 @@ app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
         console.log(response);
 
 	$scope.pack = $scope.pack.concat(response.quotes);
+        $scope.$QuoteService.setQuotes($scope.pack, 0);
 
 	$rootScope.$broadcast('fetch-done');
 
@@ -72,9 +140,8 @@ app.controller("mainCtrl", function($scope, Quote, $rootScope, $state) {
       });
   };
 
-  $scope.goToView = function(item) {
-    var param = angular.toJson(item);
-    $state.go('view', {params: param});
+  $scope.goToView = function(id) {
+    $state.go('view', {id: id});
   };
 
   $scope.$on('fetch-initiate', function(e, data) {
@@ -113,6 +180,7 @@ app.controller("postCtrl", function($scope, Quote, $rootScope, $state) {
     quote.$save()
       .then(function(response) {
 	console.log(response);
+        $scope.id = response.id;
 	$rootScope.$broadcast('post-done');
       })
       .catch(function(response) {
@@ -127,7 +195,7 @@ app.controller("postCtrl", function($scope, Quote, $rootScope, $state) {
 
   $scope.$on('post-done', function(e, data) {
     // done and go to see the detail
-    $state.go('view', {params: angular.toJson($scope.quote)});
+    $state.go('view', {id: $scope.id});
   });
 
   $scope.$on('post-fail', function(e, data) {
@@ -137,6 +205,29 @@ app.controller("postCtrl", function($scope, Quote, $rootScope, $state) {
   });
 });
 
-app.controller("viewCtrl", function($scope, $rootScope, $stateParams) {
-  $scope.quote = angular.fromJson($stateParams.params);
+app.controller("viewCtrl", function($scope, $rootScope, $stateParams, QuoteService, Quote) {
+  console.log($stateParams);
+  $scope.$QuoteService = QuoteService;
+  var id = $stateParams.id;
+  var now = $scope.$QuoteService.find(id);
+  console.log(now);
+  if (now === undefined) {
+    // do a request
+    var quote = new Quote();
+    quote.$show({id: id})
+      .then(function(response) {
+        console.log(response);
+        $scope.quote = response;
+      })
+      .catch(function(response) {
+        console.log(response);
+        $scope.quote = {
+          'quote': "Whatever you are looking for, it is in another castle",
+          'author': "developer",
+          'image': 'res/404.jpg'
+        };
+      });
+  } else {
+    $scope.quote = $scope.$QuoteService.getQuote();
+  }
 });
